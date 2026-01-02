@@ -81,13 +81,13 @@
       <h4>Generate one-time links</h4>
       <form method="post" action="{{ url_for('generate_links') }}">
         <div class="mb-3">
-          <label class="form-label">File</label>
-          <select class="form-select" name="file_id" required>
-            <option value="">Select file</option>
+          <label class="form-label">Files (multi-select to bundle)</label>
+          <select class="form-select" name="file_ids" required multiple size="6">
             {% for file in files %}
             <option value="{{ file.id }}">{{ file.display_name }} ({{ (file.size_bytes/1024/1024)|round(2) }} MB)</option>
             {% endfor %}
           </select>
+          <div class="form-text text-muted">Hold Ctrl/Cmd to select multiple files for a single link.</div>
         </div>
         <div class="mb-3">
           <label class="form-label">How many links?</label>
@@ -129,7 +129,7 @@
           <tbody>
             {% for link in links %}
             <tr>
-              <td>{{ link.file.display_name }}</td>
+              <td>{{ link.download_files | map(attribute='display_name') | join(', ') }}</td>
               <td><span class="badge bg-secondary badge-status">{{ link.status }}</span></td>
               <td>{{ link.customer_email or '—' }}</td>
               <td>{{ link.created_at.strftime('%Y-%m-%d') }}</td>

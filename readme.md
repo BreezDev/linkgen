@@ -5,6 +5,7 @@ This repository contains a Flask application for delivering plugin ZIPs through 
 ## Features
 - Admin-only dashboard secured with a password (set via `ADMIN_PASSWORD` or `ADMIN_PASSWORD_HASH`).
 - Upload ZIP files to local storage.
+- Bundle multiple files into a single one-time link (downloads stream as a ZIP when more than one file is attached).
 - Generate one-time download links with optional expirations, customer emails, and order prefixes.
 - Track link status, usage metadata, and revoke access when needed.
 - Branded public download page with one-time enforcement.

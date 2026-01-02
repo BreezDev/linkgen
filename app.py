@@ -1,7 +1,9 @@
-import os
 import hashlib
+import os
 import secrets
+import zipfile
 from datetime import datetime, timedelta
+from io import BytesIO
 
 from flask import (Flask, abort, flash, g, redirect, render_template, request,
                    send_file, session, url_for)
@@ -40,6 +42,13 @@ db = SQLAlchemy(app)
 _db_initialized = False
 
 
+download_link_files = db.Table(
+    "download_link_files",
+    db.Column("download_link_id", db.Integer, db.ForeignKey("download_link.id"), primary_key=True),
+    db.Column("file_id", db.Integer, db.ForeignKey("file.id"), primary_key=True),
+)
+
+
 def _ensure_database_initialized():
     global _db_initialized
     if _db_initialized:
@@ -73,10 +82,21 @@ class DownloadLink(db.Model):
     used_user_agent = db.Column(db.Text)
 
     file = db.relationship("File")
+    files = db.relationship("File", secondary=download_link_files)
 
     @property
     def is_expired(self):
         return self.expires_at is not None and datetime.utcnow() > self.expires_at
+
+    @property
+    def download_files(self):
+        if self.files:
+            return self.files
+        return [self.file] if self.file else []
+
+    @property
+    def total_size_bytes(self):
+        return sum(f.size_bytes for f in self.download_files)
 
 
 @app.before_request
@@ -209,7 +229,7 @@ def generate_links():
     if redirect_resp:
         return redirect_resp
 
-    file_id = request.form.get("file_id")
+    file_ids = [fid for fid in request.form.getlist("file_ids") if fid]
     try:
         count = int(request.form.get("count") or 1)
     except ValueError:
@@ -219,15 +239,22 @@ def generate_links():
     customer_emails = [e.strip() for e in request.form.get("customer_emails", "").splitlines() if e.strip()]
     order_prefix = request.form.get("order_prefix", "").strip() or None
 
-    if not file_id:
-        flash("Please select a file.", "danger")
+    if not file_ids:
+        flash("Please select at least one file.", "danger")
         return redirect(url_for("dashboard"))
 
-    selected_file = File.query.get(int(file_id))
-    if not selected_file:
-        flash("File not found.", "danger")
+    try:
+        file_ids_int = [int(fid) for fid in file_ids]
+    except ValueError:
+        flash("Invalid file selection.", "danger")
         return redirect(url_for("dashboard"))
 
+    files = File.query.filter(File.id.in_(file_ids_int)).all()
+    if not files or len(files) != len(set(file_ids_int)):
+        flash("One or more files were not found.", "danger")
+        return redirect(url_for("dashboard"))
+
+    primary_file = files[0]
     expires_at = None
     if expires_days:
         try:
@@ -244,18 +271,19 @@ def generate_links():
         email = customer_emails[i] if i < len(customer_emails) else None
         order_id = f"{order_prefix}{i+1}" if order_prefix else None
         link = DownloadLink(
-            file=selected_file,
+            file=primary_file,
             token_hash=token_hash,
             status="unused",
             expires_at=expires_at,
             customer_email=email,
             order_id=order_id,
         )
+        link.files = files
         db.session.add(link)
         links.append((link, token))
     db.session.commit()
 
-    return render_template("generated_links.html", links=links, file=selected_file)
+    return render_template("generated_links.html", links=links, files=files)
 
 
 @app.route("/admin/links")
@@ -295,7 +323,9 @@ def download_page(token):
     if not link:
         abort(404)
 
-    file = link.file
+    files = link.download_files
+    if not files:
+        return render_template("error.html", message="No files available for this link."), 410
     if link.status == "revoked":
         return render_template("error.html", message="This link is no longer available."), 410
     if link.is_expired:
@@ -303,7 +333,8 @@ def download_page(token):
     if link.status == "used":
         return render_template("error.html", message="This link has already been used."), 410
 
-    return render_template("download.html", link=link, file=file, token=token)
+    total_size_mb = sum(f.size_bytes for f in files) / (1024 * 1024)
+    return render_template("download.html", link=link, files=files, token=token, total_size_mb=total_size_mb)
 
 
 @app.route("/dl/<token>/download", methods=["POST"])
@@ -317,6 +348,14 @@ def perform_download(token):
         return render_template("error.html", message="This link has already been used."), 410
     if link.is_expired:
         return render_template("error.html", message="Link expired. Contact support."), 410
+
+    files = link.download_files
+    if not files:
+        return render_template("error.html", message="No files available for this link."), 410
+    missing_files = [f for f in files if not os.path.exists(f.storage_path)]
+    if missing_files:
+        missing_names = ", ".join(f.original_filename for f in missing_files)
+        return render_template("error.html", message=f"File unavailable ({missing_names}). Please contact support."), 410
 
     updated = DownloadLink.query.filter_by(token_hash=token_hash, status="unused").update(
         {
@@ -332,14 +371,30 @@ def perform_download(token):
         return render_template("error.html", message="This link has already been used."), 410
     db.session.commit()
 
-    file = link.file
-    if not os.path.exists(file.storage_path):
-        return render_template("error.html", message="File unavailable. Please contact support."), 410
+    if len(files) == 1:
+        file = files[0]
+        return send_file(
+            file.storage_path,
+            as_attachment=True,
+            download_name=file.original_filename,
+        )
+
+    archive_stream = BytesIO()
+    with zipfile.ZipFile(archive_stream, "w", compression=zipfile.ZIP_DEFLATED) as zipf:
+        for f in files:
+            arcname = f.original_filename or os.path.basename(f.storage_path)
+            zipf.write(f.storage_path, arcname=arcname)
+    archive_stream.seek(0)
+
+    archive_name = link.order_id or "download-bundle"
+    archive_name = secure_filename(archive_name) or "download-bundle"
+    archive_name = f"{archive_name}.zip"
 
     return send_file(
-        file.storage_path,
+        archive_stream,
         as_attachment=True,
-        download_name=file.original_filename,
+        download_name=archive_name,
+        mimetype="application/zip",
     )
 
 
