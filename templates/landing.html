@@ -1,109 +1,153 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="hero text-center">
-  <div class="mb-3 d-inline-flex align-items-center gap-2">
-    <span class="highlight-pill">Producer-ready downloads</span>
-    <span class="badge bg-success text-dark badge-status">Verified Files</span>
-  </div>
-  <h1 class="display-4 fw-bold">Premium tools for faster, cleaner production</h1>
-  <p class="lead subtext mx-auto" style="max-width: 720px;">
-    The Plugin Plug is a curated library of plugins, presets, drum kits, loop kits, and production software.
-    Simple checkout, instant delivery, and a clean file structure so you can get back to making music.
-  </p>
-  <div class="d-flex justify-content-center gap-3 mt-4">
-    <a class="btn btn-lg cta-btn" href="#products">Browse products</a>
-    <a class="btn btn-outline-light btn-lg" href="#trust">How delivery works</a>
-  </div>
-  <p class="text-muted small mt-3 mb-0">Clean, modern delivery UI</p>
-</section>
-
-<section id="products" class="py-4">
-  <div class="row g-4">
-    <div class="col-md-4">
-      <div class="card bubble-card h-100 p-3">
-        <div class="icon-circle mb-3"><span>🎛️</span></div>
-        <h3 class="h4">Plugins & instruments</h3>
-        <p class="subtext">Curated effects and virtual instruments that fit real workflows—sound first, no clutter.</p>
-        <ul class="list-unstyled subtext small">
-          <li>• Clear install notes and compatibility info.</li>
-          <li>• Organized downloads with version labeling.</li>
-          <li>• Quick-start steps for common DAWs.</li>
-        </ul>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="card bubble-card h-100 p-3">
-        <div class="icon-circle mb-3"><span>🧩</span></div>
-        <h3 class="h4">Presets & expansions</h3>
-        <p class="subtext">Preset banks and expansions designed for modern genres—mapped, labeled, and easy to audition.</p>
-        <ul class="list-unstyled subtext small">
-          <li>• Sorted folders (keys/BPM/genre when applicable).</li>
-          <li>• Notes on required plugin versions.</li>
-          <li>• Practical demos so you know what you’re getting.</li>
-        </ul>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="card bubble-card h-100 p-3">
-        <div class="icon-circle mb-3"><span>🎵</span></div>
-        <h3 class="h4">Drum kits, loops & MIDI</h3>
-        <p class="subtext">High-utility sounds and ideas you can drag straight into a session—built to move fast.</p>
-        <ul class="list-unstyled subtext small">
-          <li>• Clean ZIPs and consistent naming.</li>
-          <li>• One-shots, loops, and MIDI in logical packs.</li>
-          <li>• License/usage notes included per product.</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="trust" class="py-5">
+<section class="hero text-start">
   <div class="row align-items-center g-4">
-    <div class="col-md-6">
-      <div class="card bubble-card p-4 h-100">
-        <div class="d-flex align-items-center gap-3 mb-3">
-          <div class="icon-circle"><span>🛡️</span></div>
-          <div>
-            <div class="highlight-pill mb-1">Secure delivery</div>
-            <h3 class="h5 mb-0">Private downloads that don’t get shared around</h3>
-          </div>
-        </div>
-        <p class="subtext">Each order gets a unique download link with controlled access to help prevent leaks and keep delivery clean.</p>
-        <ul class="subtext small list-unstyled mb-0">
-          <li>• Unique links per customer.</li>
-          <li>• Expiring access windows (optional).</li>
-          <li>• File integrity checks on upload.</li>
-        </ul>
+    <div class="col-lg-7">
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <span class="pill pill-soft">Private delivery</span>
+        <span class="pill pill-soft">Instant access</span>
+        <span class="pill pill-soft">Verified files</span>
+      </div>
+      <h1 class="display-4 fw-bold mb-3">Drop-ready sounds, plugins, and kits that ship clean.</h1>
+      <p class="lead subtext mb-4">The Plugin Plug is your stocked vault of production tools—organized downloads, friendly delivery links, and fast support so you can focus on making records.</p>
+      <div class="d-flex flex-wrap gap-3">
+        <a class="btn btn-lg cta-btn" href="#catalog">Browse the catalog</a>
+        <a class="btn btn-outline-light btn-lg" href="#how">See how delivery works</a>
+      </div>
+      <div class="d-flex flex-wrap gap-3 mt-4">
+        <span class="badge badge-light">One-time secure links</span>
+        <span class="badge badge-light">Clean ZIPs & labeled folders</span>
+        <span class="badge badge-light">Support that answers</span>
       </div>
     </div>
-    <div class="col-md-6">
-      <div class="card bubble-card p-4 h-100">
-        <div class="d-flex align-items-center gap-3 mb-3">
-          <div class="icon-circle"><span>⚡</span></div>
-          <div>
-            <div class="highlight-pill mb-1">Fast setup</div>
-            <h3 class="h5 mb-0">From download to session in minutes</h3>
+    <div class="col-lg-5">
+      <div class="glass-panel p-4">
+        <h4 class="mb-3">What you get</h4>
+        <div class="feature-grid">
+          <div class="feature-card">
+            <div class="icon-circle mb-2"><span>🎚️</span></div>
+            <h5 class="mb-1">Plugins & instruments</h5>
+            <p class="subtext small mb-0">Curated effects and VSTs with compatibility notes, versioned downloads, and quick install steps.</p>
+          </div>
+          <div class="feature-card">
+            <div class="icon-circle mb-2"><span>🧩</span></div>
+            <h5 class="mb-1">Presets & expansions</h5>
+            <p class="subtext small mb-0">Banks mapped for modern genres—keys/BPM/genre labeled so you can audition fast.</p>
+          </div>
+          <div class="feature-card">
+            <div class="icon-circle mb-2"><span>🥁</span></div>
+            <h5 class="mb-1">Drum kits, loops & MIDI</h5>
+            <p class="subtext small mb-0">One-shots, loops, and MIDI packs with tidy folder structures and usage notes included.</p>
           </div>
         </div>
-        <ol class="subtext small ps-3">
-          <li>Download your files from your private link.</li>
-          <li>Follow the quick install notes included with the product.</li>
-          <li>Load it up in your DAW and get to work.</li>
-        </ol>
-        <p class="subtext mb-0">If anything doesn’t install right, support will help you troubleshoot based on your DAW + OS.</p>
       </div>
     </div>
   </div>
 </section>
 
-<section class="py-4 pb-5">
-  <div class="card bubble-card p-4 text-center">
-    <h3 class="section-title mb-2">Build your sound library</h3>
-    <p class="subtext mb-3">Browse the catalog, download instantly, and keep your workflow moving with clean, organized assets.</p>
-    <div class="d-flex justify-content-center gap-3">
-      <a class="btn cta-btn btn-lg" href="#products">Browse the catalog</a>
-      <a class="btn btn-outline-light btn-lg" href="mailto:support@pluginplug.example">Support</a>
+<div class="divider"></div>
+
+<section id="catalog" class="py-4">
+  <div class="hero-grid">
+    <div class="card bubble-card p-4">
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <div class="icon-circle"><span>⚡</span></div>
+        <div>
+          <div class="highlight-pill mb-1">Fast delivery</div>
+          <h3 class="h4 mb-0">Instant private links</h3>
+        </div>
+      </div>
+      <p class="subtext">Each purchase gets its own secure link with optional expiration. Shareable enough for customers, controlled enough to protect your stock.</p>
+      <ul class="subtext small list-unstyled mb-0">
+        <li>• Unique, one-time links per customer.</li>
+        <li>• Optional expiry windows to keep drops tight.</li>
+        <li>• Download pages branded to The Plugin Plug.</li>
+      </ul>
+    </div>
+    <div class="card bubble-card p-4">
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <div class="icon-circle"><span>🛠️</span></div>
+        <div>
+          <div class="highlight-pill mb-1">Built for producers</div>
+          <h3 class="h4 mb-0">Cleaner installs, fewer headaches</h3>
+        </div>
+      </div>
+      <p class="subtext">Every drop is organized with consistent naming, included notes, and labels so you spend less time hunting and more time creating.</p>
+      <ul class="subtext small list-unstyled mb-0">
+        <li>• ZIPs with version labels and DAW tips.</li>
+        <li>• Tags and notes to explain requirements.</li>
+        <li>• Support that can troubleshoot installs.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="how" class="py-4">
+  <div class="row g-4 align-items-center">
+    <div class="col-lg-5">
+      <h3 class="section-title mb-3">How delivery works</h3>
+      <p class="subtext">Pick your kit, pay once, and get a private link immediately. Each link is tied to your order so drops stay under control.</p>
+      <ol class="subtext ps-3">
+        <li>Choose your sound pack, plugin, or preset bank.</li>
+        <li>Receive a unique download link—no login needed.</li>
+        <li>Install with the included notes and get back to making.</li>
+      </ol>
+      <div class="d-flex gap-3 mt-3 flex-wrap">
+        <span class="badge badge-light">Secure</span>
+        <span class="badge badge-light">Fast</span>
+        <span class="badge badge-light">Creator-friendly</span>
+      </div>
+    </div>
+    <div class="col-lg-7">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="stat-tile">
+            <div class="text-muted">Delivery uptime</div>
+            <div class="display-6 fw-bold">99.9%</div>
+            <p class="subtext small mb-0">Reliable hosting for every drop.</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="stat-tile">
+            <div class="text-muted">Instant access</div>
+            <div class="display-6 fw-bold">Seconds</div>
+            <p class="subtext small mb-0">Links go live right after purchase.</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="stat-tile">
+            <div class="text-muted">Organized drops</div>
+            <div class="display-6 fw-bold">100%</div>
+            <p class="subtext small mb-0">Labeled files with clear notes.</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="stat-tile">
+            <div class="text-muted">Support</div>
+            <div class="display-6 fw-bold">Real humans</div>
+            <p class="subtext small mb-0">Troubleshooting for DAW + OS combos.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="py-5 text-center">
+  <div class="glass-panel p-4 p-md-5">
+    <div class="d-inline-flex align-items-center gap-2 mb-2">
+      <span class="highlight-pill">Ready when you are</span>
+      <span class="badge badge-light">New drops weekly</span>
+    </div>
+    <h3 class="display-6 fw-bold mb-3">Build your library, protect your drops, and stay in flow.</h3>
+    <p class="subtext mb-4">Instant access, private delivery, and organized files for producers who care about their sound. If you need anything, reach out—we answer.</p>
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+      <a class="btn cta-btn btn-lg" href="#catalog">Browse the catalog</a>
+      <a class="btn btn-outline-light btn-lg" href="mailto:support@pluginplug.example">Talk to support</a>
     </div>
   </div>
 </section>

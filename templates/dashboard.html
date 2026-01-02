@@ -33,15 +33,42 @@
 <div class="row g-4">
   <div class="col-lg-5">
     <div class="card p-3 mb-3">
-      <h4>Upload ZIP</h4>
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <h4 class="mb-0">Add new asset</h4>
+        {% if max_upload_gb %}
+        <span class="badge bg-primary">Max {{ max_upload_gb }} GB ({{ max_upload_mb }} MB)</span>
+        {% endif %}
+      </div>
+      <p class="text-muted small">Upload a ZIP or save a link/text snippet to generate download links for your stock.</p>
       <form method="post" action="{{ url_for('upload_file') }}" enctype="multipart/form-data">
+        <div class="mb-3">
+          <label class="form-label">What are you adding?</label>
+          <div class="d-flex gap-3 flex-wrap">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="upload_mode" id="modeFile" value="file" checked>
+              <label class="form-check-label" for="modeFile">Upload file</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="upload_mode" id="modeText" value="text">
+              <label class="form-check-label" for="modeText">Save link or text</label>
+            </div>
+          </div>
+        </div>
         <div class="mb-3">
           <label class="form-label">Display name</label>
           <input class="form-control" name="display_name" placeholder="Plugin name" />
         </div>
-        <div class="mb-3">
+        <div class="mb-3 file-fields">
           <label class="form-label">ZIP file</label>
-          <input class="form-control" type="file" name="file" accept=".zip" required />
+          <input class="form-control" type="file" name="file" accept=".zip" />
+          {% if max_upload_mb %}
+          <div class="form-text text-muted">Max upload size: {{ max_upload_mb }} MB ({{ max_upload_gb }} GB)</div>
+          {% endif %}
+        </div>
+        <div class="mb-3 text-fields d-none">
+          <label class="form-label">Link or text to deliver</label>
+          <textarea class="form-control" name="content_input" rows="3" placeholder="Paste a URL or delivery notes"></textarea>
+          <div class="form-text text-muted">We'll save this as a downloadable text file.</div>
         </div>
         <div class="mb-3">
           <label class="form-label">Notes</label>
@@ -64,15 +91,15 @@
         </div>
         <div class="mb-3">
           <label class="form-label">How many links?</label>
-          <input class="form-control" name="count" type="number" min="1" value="1">
+          <input class="form-control" name="count" type="number" min="1" value="1" placeholder="Defaults to 1 if blank">
         </div>
         <div class="mb-3">
           <label class="form-label">Expiration (days)</label>
           <input class="form-control" name="expires_days" type="number" min="1" placeholder="Optional">
         </div>
         <div class="mb-3">
-          <label class="form-label">Customer emails (one per line)</label>
-          <textarea class="form-control" name="customer_emails" rows="3"></textarea>
+          <label class="form-label">Customer emails (optional, one per line)</label>
+          <textarea class="form-control" name="customer_emails" rows="3" placeholder="Leave blank for stock links"></textarea>
         </div>
         <div class="mb-3">
           <label class="form-label">Order prefix (optional)</label>
@@ -115,4 +142,18 @@
     </div>
   </div>
 </div>
+<script>
+  const modeFile = document.getElementById('modeFile');
+  const modeText = document.getElementById('modeText');
+  const fileFields = document.querySelector('.file-fields');
+  const textFields = document.querySelector('.text-fields');
+  function toggleFields() {
+    const isText = modeText.checked;
+    textFields.classList.toggle('d-none', !isText);
+    fileFields.classList.toggle('d-none', isText);
+  }
+  modeFile.addEventListener('change', toggleFields);
+  modeText.addEventListener('change', toggleFields);
+  toggleFields();
+</script>
 {% endblock %}

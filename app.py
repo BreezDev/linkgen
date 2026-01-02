@@ -14,10 +14,19 @@ DB_PATH = os.path.join(BASE_DIR, "linkgen.db")
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "storage")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+
+def _get_max_upload_bytes(default_mb: int = 500) -> int:
+    try:
+        return int(os.getenv("MAX_UPLOAD_MB", str(default_mb))) * 1024 * 1024
+    except ValueError:
+        return default_mb * 1024 * 1024
+
+
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("FLASK_SECRET", "dev-secret-change-me")
 app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{DB_PATH}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["MAX_CONTENT_LENGTH"] = _get_max_upload_bytes()
 
 ADMIN_PASSWORD_HASH = os.getenv("ADMIN_PASSWORD_HASH")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
@@ -127,7 +136,17 @@ def dashboard():
         "links_used": DownloadLink.query.filter_by(status="used").count(),
         "links_revoked": DownloadLink.query.filter_by(status="revoked").count(),
     }
-    return render_template("dashboard.html", files=files, links=links, stats=stats)
+    max_upload_bytes = app.config.get("MAX_CONTENT_LENGTH", 0)
+    max_upload_mb = max_upload_bytes // (1024 * 1024) if max_upload_bytes else 0
+    max_upload_gb = round(max_upload_bytes / (1024 * 1024 * 1024), 2) if max_upload_bytes else 0
+    return render_template(
+        "dashboard.html",
+        files=files,
+        links=links,
+        stats=stats,
+        max_upload_mb=max_upload_mb,
+        max_upload_gb=max_upload_gb,
+    )
 
 
 @app.route("/admin/files/upload", methods=["POST"])
@@ -137,20 +156,35 @@ def upload_file():
         return redirect_resp
 
     upload = request.files.get("file")
-    display_name = request.form.get("display_name") or (upload.filename if upload else "")
+    display_name = request.form.get("display_name") or (upload.filename if upload else "") or "Untitled"
     notes = request.form.get("notes")
-    if not upload or upload.filename == "":
-        flash("Please select a ZIP file to upload.", "danger")
-        return redirect(url_for("dashboard"))
+    upload_mode = request.form.get("upload_mode", "file")
+    content_input = request.form.get("content_input", "").strip()
 
-    filename = secure_filename(upload.filename)
-    filepath = os.path.join(UPLOAD_FOLDER, filename)
-    upload.save(filepath)
-    size_bytes = os.path.getsize(filepath)
+    if upload_mode == "text":
+        if not content_input:
+            flash("Please paste a link or some text to save.", "danger")
+            return redirect(url_for("dashboard"))
+        safe_name = secure_filename(display_name) if display_name else "content"
+        filename = f"{safe_name or 'content'}-{int(datetime.utcnow().timestamp())}.txt"
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.write(content_input)
+        size_bytes = os.path.getsize(filepath)
+        original_filename = filename
+    else:
+        if not upload or upload.filename == "":
+            flash("Please select a ZIP file to upload.", "danger")
+            return redirect(url_for("dashboard"))
+        filename = secure_filename(upload.filename)
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        upload.save(filepath)
+        size_bytes = os.path.getsize(filepath)
+        original_filename = filename
 
     record = File(
         display_name=display_name,
-        original_filename=filename,
+        original_filename=original_filename,
         storage_path=filepath,
         size_bytes=size_bytes,
         notes=notes,
@@ -176,7 +210,11 @@ def generate_links():
         return redirect_resp
 
     file_id = request.form.get("file_id")
-    count = int(request.form.get("count", 1))
+    try:
+        count = int(request.form.get("count") or 1)
+    except ValueError:
+        flash("Please enter a valid link count.", "danger")
+        return redirect(url_for("dashboard"))
     expires_days = request.form.get("expires_days")
     customer_emails = [e.strip() for e in request.form.get("customer_emails", "").splitlines() if e.strip()]
     order_prefix = request.form.get("order_prefix", "").strip() or None
@@ -308,6 +346,19 @@ def perform_download(token):
 @app.errorhandler(404)
 def not_found(_):
     return render_template("error.html", message="Not found."), 404
+
+
+@app.errorhandler(413)
+def payload_too_large(_):
+    max_bytes = app.config.get("MAX_CONTENT_LENGTH", 0)
+    max_mb = max_bytes // (1024 * 1024)
+    max_gb = round(max_bytes / (1024 * 1024 * 1024), 2) if max_bytes else 0
+    message = "File too large. Please upload a smaller file"
+    if max_mb:
+        message += f" (limit: {max_mb} MB / {max_gb} GB)."
+    else:
+        message += "."
+    return render_template("error.html", message=message), 413
 
 
 if __name__ == "__main__":

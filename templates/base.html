@@ -8,15 +8,15 @@
   <style>
     body {
       background: radial-gradient(circle at 20% 20%, rgba(125, 216, 255, 0.12), transparent 35%),
-                  radial-gradient(circle at 80% 0%, rgba(255, 95, 162, 0.12), transparent 30%),
-                  #0b1021;
+                  radial-gradient(circle at 80% 0%, rgba(255, 95, 162, 0.1), transparent 40%),
+                  linear-gradient(180deg, #060915 0%, #0d1330 60%, #0a0f1e 100%);
       color: #f4f6fb;
       min-height: 100vh;
     }
-    .navbar { background-color: rgba(15, 22, 46, 0.95); backdrop-filter: blur(8px); }
+    .navbar { background-color: rgba(15, 22, 46, 0.95); backdrop-filter: blur(8px); border-bottom: 1px solid #1b2242; }
     .card { background-color: #11172f; border: 1px solid #1e2745; color: #f4f6fb; box-shadow: 0 10px 40px rgba(0,0,0,0.35); }
     a, .btn-link { color: #7dd8ff; }
-    .hero { padding: 3rem 0; text-align: center; }
+    .hero { padding: 4rem 0; text-align: center; }
     .brand { font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
     .badge-status { text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.08em; }
     .bubble-card { border-radius: 18px; background: linear-gradient(135deg, rgba(17,23,47,0.9), rgba(26,35,66,0.92)); border: 1px solid rgba(125, 216, 255, 0.3); }
@@ -27,6 +27,15 @@
     .section-title { font-weight: 800; letter-spacing: 0.08em; }
     .glow-accent { color: #7dd8ff; }
     .icon-circle { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: rgba(255, 95, 162, 0.1); border: 1px solid rgba(255, 95, 162, 0.4); }
+    .glass-panel { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 12px 45px rgba(0,0,0,0.45); border-radius: 18px; }
+    .pill { padding: 0.35rem 0.85rem; border-radius: 999px; font-weight: 600; letter-spacing: 0.05em; }
+    .pill-soft { background: rgba(255,255,255,0.06); color: #dfe7ff; border: 1px solid rgba(255,255,255,0.08); }
+    .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
+    .feature-card { padding: 1.5rem; border-radius: 16px; background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(125,216,255,0.05)); border: 1px solid rgba(125,216,255,0.2); min-height: 180px; }
+    .stat-tile { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 14px; }
+    .divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent); margin: 2.5rem 0; }
+    .hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; align-items: center; }
+    .badge-light { background: rgba(255, 255, 255, 0.08); color: #dfe7ff; }
   </style>
 </head>
 <body>
