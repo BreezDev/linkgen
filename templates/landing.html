@@ -1,5 +1,90 @@
 {% extends "base.html" %}
 {% block content %}
+<style>
+  .page-shell {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+  }
+  .hero {
+    padding: 3.5rem 0 3rem;
+    text-align: center;
+  }
+  .hero .lead {
+    color: #cdd6f6;
+    line-height: 1.6;
+  }
+  .badge-status {
+    background: #75e0a7;
+    color: #0b1021;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+  .row {
+    display: grid;
+    gap: 1.25rem;
+  }
+  #products .row { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  #trust .row { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  .card {
+    background: linear-gradient(145deg, rgba(17,23,47,0.92), rgba(26,35,66,0.95));
+    border-radius: 18px;
+    border: 1px solid rgba(125, 216, 255, 0.25);
+    color: #f4f6fb;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  }
+  .bubble-card { height: 100%; }
+  .icon-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: rgba(255, 95, 162, 0.1);
+    border: 1px solid rgba(255, 95, 162, 0.45);
+    font-size: 1.15rem;
+  }
+  .highlight-pill {
+    background: rgba(125, 216, 255, 0.12);
+    border: 1px solid rgba(125, 216, 255, 0.5);
+    color: #bcefff;
+    border-radius: 999px;
+    padding: 0.35rem 0.75rem;
+    font-weight: 700;
+  }
+  .subtext { color: #cdd6f6; }
+  .section-title { font-weight: 800; letter-spacing: 0.08em; }
+  .btn,
+  .btn-lg {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    border-radius: 14px;
+    padding: 0.75rem 1.25rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .cta-btn {
+    background: linear-gradient(120deg, #7dd8ff, #ff5fa2);
+    color: #0b1021;
+    box-shadow: 0 12px 32px rgba(255, 95, 162, 0.35);
+  }
+  .btn-outline-light {
+    background: transparent;
+    color: #f4f6fb;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+  }
+  .list-unstyled { list-style: none; padding-left: 0; }
+  ol { color: #cdd6f6; }
+  a { color: #7dd8ff; }
+  @media (min-width: 992px) {
+    .hero { padding: 4rem 0; }
+  }
+</style>
+<div class="page-shell">
 <section class="hero text-center">
   <div class="mb-3 d-inline-flex align-items-center gap-2">
     <span class="highlight-pill">Producer-ready downloads</span>
@@ -14,6 +99,7 @@
     <a class="btn btn-lg cta-btn" href="#products">Browse products</a>
     <a class="btn btn-outline-light btn-lg" href="#trust">How delivery works</a>
   </div>
+  <p class="text-muted small mt-3 mb-0">Clean, modern delivery UI</p>
 </section>
 
 <section id="products" class="py-4">
@@ -106,4 +192,5 @@
     </div>
   </div>
 </section>
+</div>
 {% endblock %}
