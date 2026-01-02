@@ -4,8 +4,13 @@
   <div class="col-lg-6">
     <div class="card p-4 text-center">
       <p class="text-uppercase text-muted">The Plugin Plug</p>
-      <h2 class="mb-1">{{ file.display_name }}</h2>
-      <p class="text-muted">{{ (file.size_bytes/1024/1024)|round(2) }} MB • One-time download</p>
+      <h2 class="mb-1">{{ files|length }} file{{ 's' if files|length > 1 else '' }} ready</h2>
+      <p class="text-muted">{{ total_size_mb|round(2) }} MB • One-time download</p>
+      <ul class="list-unstyled text-muted small">
+        {% for file in files %}
+        <li>{{ file.display_name }} ({{ (file.size_bytes/1024/1024)|round(2) }} MB)</li>
+        {% endfor %}
+      </ul>
       <form method="post" action="{{ url_for('perform_download', token=token) }}">
         <button class="btn btn-success btn-lg" type="submit">Download</button>
       </form>
