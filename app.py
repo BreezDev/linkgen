@@ -64,6 +64,11 @@ def load_globals():
     g.is_admin = session.get("is_admin", False)
 
 
+@app.route("/")
+def landing():
+    return render_template("landing.html")
+
+
 @app.cli.command("init-db")
 def init_db_command():
     db.create_all()
