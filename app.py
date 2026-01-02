@@ -15,7 +15,7 @@ UPLOAD_FOLDER = os.path.join(BASE_DIR, "storage")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
-def _get_max_upload_bytes(default_mb: int = 500) -> int:
+def _get_max_upload_bytes(default_mb: int = 5120) -> int:
     try:
         return int(os.getenv("MAX_UPLOAD_MB", str(default_mb))) * 1024 * 1024
     except ValueError:
