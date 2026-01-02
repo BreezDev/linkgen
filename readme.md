@@ -21,6 +21,7 @@ This repository contains a Flask application for delivering plugin ZIPs through 
    ```bash
    export FLASK_APP=app.py
    export FLASK_SECRET="change-me"
+   export MAX_UPLOAD_MB=500  # optional: cap uploads at this size (MB)
    export ADMIN_PASSWORD="choose-a-strong-password"
    # or supply ADMIN_PASSWORD_HASH instead of ADMIN_PASSWORD
    ```
@@ -48,6 +49,11 @@ This repository contains a Flask application for delivering plugin ZIPs through 
 - Serve downloads over HTTPS only, set `Secure`/`HttpOnly` on cookies, and rotate `FLASK_SECRET` regularly. If you host behind a
   CDN or WAF, enable basic rate limiting to deter brute-force token guessing.
 - Keep the operating system patched, rotate your admin password, and back up `linkgen.db` + file storage in a secure location.
+
+## Handling large uploads and 413 errors
+- The app caps uploads using Flask's `MAX_CONTENT_LENGTH` (configured via `MAX_UPLOAD_MB`, default `500`). If you see "413 Request Entity Too Large" inside Flask, increase `MAX_UPLOAD_MB` in your environment.
+- When running behind Nginx or another reverse proxy, also raise the upstream body size limit (e.g., `client_max_body_size 500M;` in your Nginx site config) so the proxy forwards larger files to Flask.
+- After changing the limit, restart both the proxy and the Flask process to ensure the new values are active.
 
 ## Customer accounts and Antistock order statuses
 You can keep customer metadata in sync with Antistock to enrich the admin dashboard and to double-check that only paid orders get
