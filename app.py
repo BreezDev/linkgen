@@ -28,6 +28,17 @@ if not ADMIN_PASSWORD_HASH:
 
 db = SQLAlchemy(app)
 
+_db_initialized = False
+
+
+def _ensure_database_initialized():
+    global _db_initialized
+    if _db_initialized:
+        return
+    with app.app_context():
+        db.create_all()
+    _db_initialized = True
+
 
 class File(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -61,6 +72,7 @@ class DownloadLink(db.Model):
 
 @app.before_request
 def load_globals():
+    _ensure_database_initialized()
     g.is_admin = session.get("is_admin", False)
 
 
