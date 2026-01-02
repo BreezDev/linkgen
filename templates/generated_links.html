@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card p-4">
+  <h3>Links for {{ file.display_name }}</h3>
+  <p class="text-muted">Copy and deliver these one-time URLs.</p>
+  <div class="table-responsive">
+    <table class="table table-dark align-middle">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Customer</th>
+          <th>Order ID</th>
+          <th>Expires</th>
+          <th>Link</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for link, token in links %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ link.customer_email or '—' }}</td>
+          <td>{{ link.order_id or '—' }}</td>
+          <td>{{ link.expires_at.strftime('%Y-%m-%d') if link.expires_at else 'No expiry' }}</td>
+          <td><code>{{ request.host_url.rstrip('/') }}{{ url_for('download_page', token=token) }}</code></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <a class="btn btn-primary" href="{{ url_for('dashboard') }}">Back to dashboard</a>
+</div>
+{% endblock %}

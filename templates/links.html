@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card p-4 mb-3">
+  <form class="row g-2" method="get">
+    <div class="col-md-4">
+      <input class="form-control" name="email" placeholder="Search email" value="{{ request.args.get('email','') }}">
+    </div>
+    <div class="col-md-4">
+      <input class="form-control" name="order_id" placeholder="Search order ID" value="{{ request.args.get('order_id','') }}">
+    </div>
+    <div class="col-md-4">
+      <button class="btn btn-primary" type="submit">Filter</button>
+    </div>
+  </form>
+</div>
+<div class="card p-3">
+  <div class="table-responsive">
+    <table class="table table-dark align-middle table-striped">
+      <thead>
+        <tr>
+          <th>File</th>
+          <th>Email</th>
+          <th>Order</th>
+          <th>Status</th>
+          <th>Created</th>
+          <th>Expires</th>
+          <th>Used at</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for link in links %}
+        <tr>
+          <td>{{ link.file.display_name }}</td>
+          <td>{{ link.customer_email or '—' }}</td>
+          <td>{{ link.order_id or '—' }}</td>
+          <td><span class="badge bg-secondary badge-status">{{ link.status }}</span></td>
+          <td>{{ link.created_at.strftime('%Y-%m-%d') }}</td>
+          <td>{{ link.expires_at.strftime('%Y-%m-%d') if link.expires_at else '—' }}</td>
+          <td>{{ link.used_at.strftime('%Y-%m-%d %H:%M') if link.used_at else '—' }}</td>
+          <td>
+            {% if link.status != 'revoked' %}
+            <form method="post" action="{{ url_for('revoke_link', link_id=link.id) }}" onsubmit="return confirm('Revoke this link?');">
+              <button class="btn btn-sm btn-outline-danger">Revoke</button>
+            </form>
+            {% else %}
+            <span class="text-muted">revoked</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
